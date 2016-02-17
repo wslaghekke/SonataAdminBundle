@@ -2223,21 +2223,21 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
             );
 
             return $childAdmin->buildBreadcrumbs($action, $menu);
-        } elseif ($this->isChild()) {
-            if ($action == 'list') {
-                $menu->setUri(false);
-            } elseif ($action != 'create' && $this->hasSubject()) {
-                $menu = $menu->addChild($this->toString($this->getSubject()));
-            } else {
-                $menu = $menu->addChild(
-                    $this->trans($this->getLabelTranslatorStrategy()->getLabel(sprintf('%s_%s', $this->getClassnameLabel(), $action), 'breadcrumb', 'link'))
-                );
-            }
-        } elseif ($action != 'list' && $this->hasSubject()) {
+        }
+
+        if ($action === 'list' && $this->isChild()) {
+            $menu->setUri(false);
+        } elseif ($action !== 'create' && $this->hasSubject()) {
             $menu = $menu->addChild($this->toString($this->getSubject()));
-        } elseif ($action != 'list') {
+        } else {
             $menu = $menu->addChild(
-                $this->trans($this->getLabelTranslatorStrategy()->getLabel(sprintf('%s_%s', $this->getClassnameLabel(), $action), 'breadcrumb', 'link'))
+                $this->trans(
+                    $this->getLabelTranslatorStrategy()->getLabel(
+                        sprintf('%s_%s', $this->getClassnameLabel(), $action),
+                        'breadcrumb',
+                        'link'
+                    )
+                )
             );
         }
 
@@ -2971,7 +2971,7 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
     {
         $list = array();
 
-        if (in_array($action, array('show', 'edit', 'delete', 'list', 'batch'))) {
+        if (in_array($action, array('tree', 'show', 'edit', 'delete', 'list', 'batch'))) {
             $list['create'] = array(
                 'template' => 'SonataAdminBundle:Button:create_button.html.twig',
             );
